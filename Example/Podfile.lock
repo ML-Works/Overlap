@@ -1,0 +1,14 @@
+PODS:
+  - Overlap (0.1.0)
+
+DEPENDENCIES:
+  - Overlap (from `../`)
+
+EXTERNAL SOURCES:
+  Overlap:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Overlap: df0f067d19a13c033ddfe0b84a66a933fbe60338
+
+COCOAPODS: 0.39.0

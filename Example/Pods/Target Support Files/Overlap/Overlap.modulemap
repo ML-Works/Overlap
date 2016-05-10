@@ -1,0 +1,6 @@
+framework module Overlap {
+  umbrella header "Overlap-umbrella.h"
+
+  export *
+  module * { export * }
+}

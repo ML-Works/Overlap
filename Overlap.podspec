@@ -1,42 +1,23 @@
-#
-# Be sure to run `pod lib lint Overlap.podspec' to ensure this is a
-# valid spec before submitting.
-#
-# Any lines starting with a # are optional, but their use is encouraged
-# To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
-#
-
 Pod::Spec.new do |s|
   s.name             = "Overlap"
   s.version          = "0.1.0"
-  s.summary          = "A short description of Overlap."
-
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
+  s.summary          = "Tiny iOS library to achieve overlap visual effect"
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+                        Allows you to overlay any possible UI elements like UILabels,
+                        UIButtons and even UIToolbars. Just create 2 views or both states
+                        and update overlap region from scrollViewDidScroll or panGestureHandler
                        DESC
 
-  s.homepage         = "https://github.com/<GITHUB_USERNAME>/Overlap"
-  # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
+  s.homepage         = "https://github.com/ML-Works/Overlap"
   s.license          = 'MIT'
   s.author           = { "Anton Bukov" => "k06aaa@gmail.com" }
-  s.source           = { :git => "https://github.com/<GITHUB_USERNAME>/Overlap.git", :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  s.source           = { :git => "https://github.com/ML-Works/Overlap.git", :tag => s.version.to_s }
+  s.social_media_url = 'https://twitter.com/k06a'
 
   s.ios.deployment_target = '8.0'
 
   s.source_files = 'Overlap/Classes/**/*'
-  
-  # s.resource_bundles = {
-  #   'Overlap' => ['Overlap/Assets/*.png']
-  # }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.frameworks = 'UIKit'
 end
