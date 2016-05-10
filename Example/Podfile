@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'Overlap_Example', :exclusive => true do
+  pod 'Overlap', :path => '../'
+end
+
+target 'Overlap_Tests', :exclusive => true do
+  pod 'Overlap', :path => '../'
+
+  
+end
