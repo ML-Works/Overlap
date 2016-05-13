@@ -68,7 +68,7 @@
         self.redView.transform = CGAffineTransformIdentity;
     }
 
-    [self.overlapView overlayWithView:self.redView];
+    [self.overlapView overlapWithView:self.redView];
 }
 
 @end

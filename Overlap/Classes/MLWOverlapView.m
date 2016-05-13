@@ -95,13 +95,13 @@
     self.overView.transform = CGAffineTransformMakeTranslation(-self.waterFrame.origin.x, -self.waterFrame.origin.y);
 }
 
-- (void)overlayWithViewFrame:(CGRect)frame {
+- (void)overlapWithViewFrame:(CGRect)frame {
     self.waterFrame = frame;
     [self setNeedsLayout];
 }
 
-- (void)overlayWithView:(UIView *)view {
-    [self overlayWithViewFrame:(self.window == view.window ? [view convertRect:view.bounds toView:self] : CGRectZero)];
+- (void)overlapWithView:(UIView *)view {
+    [self overlapWithViewFrame:(self.window == view.window ? [view convertRect:view.bounds toView:self] : CGRectZero)];
 }
 
 @end

@@ -21,8 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithGenerator:(T (^)(BOOL isOverlay))generator;
 
-- (void)overlayWithViewFrame:(CGRect)frame;
-- (void)overlayWithView:(UIView *)view;
+- (void)overlapWithViewFrame:(CGRect)frame;
+- (void)overlapWithView:(UIView *)view;
 
 @end
 

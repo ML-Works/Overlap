@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "Overlap"
-  s.version          = "0.1.0"
+  s.version          = "0.1.1"
   s.summary          = "Tiny iOS library to achieve overlap visual effect"
 
   s.description      = <<-DESC
@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.source           = { :git => "https://github.com/ML-Works/Overlap.git", :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/k06a'
 
-  s.ios.deployment_target = '8.0'
+  s.ios.deployment_target = '7.0'
 
   s.source_files = 'Overlap/Classes/**/*'
 
