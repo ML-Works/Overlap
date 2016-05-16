@@ -1,6 +1,6 @@
 # Overlap
 
-[![CI Status](http://img.shields.io/travis/Anton Bukov/Overlap.svg?style=flat)](https://travis-ci.org/Anton Bukov/Overlap)
+[![CI Status](http://img.shields.io/travis/ML-Works/Overlap.svg?style=flat)](https://travis-ci.org/ML-Works/Overlap)
 [![Version](https://img.shields.io/cocoapods/v/Overlap.svg?style=flat)](http://cocoapods.org/pods/Overlap)
 [![License](https://img.shields.io/cocoapods/l/Overlap.svg?style=flat)](http://cocoapods.org/pods/Overlap)
 [![Platform](https://img.shields.io/cocoapods/p/Overlap.svg?style=flat)](http://cocoapods.org/pods/Overlap)
@@ -19,7 +19,7 @@ Overlap is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod "Overlap"
+pod 'Overlap'
 ```
 
 ## Author
