@@ -90,14 +90,17 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    [self letsLayout];
+}
 
+- (void)letsLayout {
     self.waterView.frame = self.waterFrame;
     self.overView.transform = CGAffineTransformMakeTranslation(-self.waterFrame.origin.x, -self.waterFrame.origin.y);
 }
 
 - (void)overlapWithViewFrame:(CGRect)frame {
     self.waterFrame = frame;
-    [self setNeedsLayout];
+    [self letsLayout];
 }
 
 - (void)overlapWithView:(UIView *)view {
