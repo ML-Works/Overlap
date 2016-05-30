@@ -2,6 +2,7 @@
 
 [![CI Status](http://img.shields.io/travis/ML-Works/Overlap.svg?style=flat)](https://travis-ci.org/ML-Works/Overlap)
 [![Version](https://img.shields.io/cocoapods/v/Overlap.svg?style=flat)](http://cocoapods.org/pods/Overlap)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![License](https://img.shields.io/cocoapods/l/Overlap.svg?style=flat)](http://cocoapods.org/pods/Overlap)
 [![Platform](https://img.shields.io/cocoapods/p/Overlap.svg?style=flat)](http://cocoapods.org/pods/Overlap)
 
@@ -22,9 +23,15 @@ it, simply add the following line to your Podfile:
 pod 'Overlap'
 ```
 
+Or, if you’re using [Carthage](https://github.com/Carthage/Carthage), simply add Overlap to your `Cartfile`:
+
+```
+github "ML-Works/Overlap"
+```
+
 ## Author
 
-Anton Bukov, k06aaa@gmail.com
+Anton Bukov, k06a@mlworks.com
 
 ## License
 

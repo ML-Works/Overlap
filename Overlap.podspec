@@ -4,14 +4,14 @@ Pod::Spec.new do |s|
   s.summary          = "Tiny iOS library to achieve overlap visual effect"
 
   s.description      = <<-DESC
-                        Allows you to overlay any possible UI elements like UILabels,
-                        UIButtons and even UIToolbars. Just create 2 views or both states
-                        and update overlap region from scrollViewDidScroll or panGestureHandler
+                       Allows you to overlay any possible UI elements like UILabels,
+                       UIButtons and even UIToolbars. Just create 2 views or both states
+                       and update overlap region from scrollViewDidScroll or panGestureHandler
                        DESC
 
   s.homepage         = "https://github.com/ML-Works/Overlap"
   s.license          = 'MIT'
-  s.author           = { "Anton Bukov" => "k06aaa@gmail.com" }
+  s.author           = { "Anton Bukov" => "k06a@mlworks.com" }
   s.source           = { :git => "https://github.com/ML-Works/Overlap.git", :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/k06a'
 
