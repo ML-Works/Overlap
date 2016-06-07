@@ -1,11 +1,9 @@
 use_frameworks!
 
-target 'Overlap_Example', :exclusive => true do
+target 'Overlap_Example' do
   pod 'Overlap', :path => '../'
-end
-
-target 'Overlap_Tests', :exclusive => true do
-  pod 'Overlap', :path => '../'
-
   
+  target 'Overlap_Tests' do
+      inherit! :search_paths
+  end
 end

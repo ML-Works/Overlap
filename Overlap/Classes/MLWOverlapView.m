@@ -38,54 +38,61 @@
 @interface MLWOverlapView ()
 
 @property (strong, nonatomic) UIView *mainView;
-@property (strong, nonatomic) UIView *overView;
-@property (strong, nonatomic) UIView *waterView;
-@property (assign, nonatomic) CGRect waterFrame;
+@property (copy, nonatomic) NSArray<UIView *> *overViews;
+@property (copy, nonatomic) NSArray<UIView *> *waterViews;
+@property (copy, nonatomic) NSArray<NSValue *> *waterFrames;
 
 @end
 
 @implementation MLWOverlapView
 
-- (instancetype)initWithGenerator:(UIView * (^)(BOOL isOverlay))generator {
+- (instancetype)initWithGenerator:(UIView * (^)(NSUInteger overlapIndex))generator {
+    return [self initWithOverlapsCount:1 generator:generator];
+}
+
+- (instancetype)initWithOverlapsCount:(NSUInteger)overlapsCount generator:(UIView * (^)(NSUInteger overlapIndex))generator {
     self = [super init];
     if (self) {
-        UIView *mainView = generator(NO);
-        UIView *overView = generator(YES);
+        UIView *mainView = generator(0);
+        [self addSubview:mainView];
+        mainView.translatesAutoresizingMaskIntoConstraints = NO;
+
+        NSMutableArray *overViews = [NSMutableArray arrayWithCapacity:overlapsCount];
+        NSMutableArray *waterViews = [NSMutableArray arrayWithCapacity:overlapsCount];
+        for (NSInteger index = 1; index <= overlapsCount; index++) {
+            UIView *overView = generator(index);
+            [overViews addObject:overView];
+
+            UIView *waterView = [[UIView alloc] initWithFrame:self.bounds];
+            waterView.backgroundColor = [UIColor clearColor];
+            waterView.clipsToBounds = YES;
+            [waterViews addObject:waterView];
+
+            [self addSubview:waterView];
+            [waterView addSubview:overView];
+            waterView.translatesAutoresizingMaskIntoConstraints = NO;
+            overView.translatesAutoresizingMaskIntoConstraints = NO;
+
+            [overView.topAnchor constraintEqualToAnchor:waterView.topAnchor].active = YES;
+            [overView.leadingAnchor constraintEqualToAnchor:waterView.leadingAnchor].active = YES;
+            [overView.widthAnchor constraintEqualToAnchor:mainView.widthAnchor].active = YES;
+            [overView.heightAnchor constraintEqualToAnchor:mainView.heightAnchor].active = YES;
+        }
 
         _mainView = mainView;
-        _overView = overView;
-
-        UIView *waterView = [[UIView alloc] initWithFrame:self.bounds];
-        waterView.backgroundColor = [UIColor clearColor];
-        waterView.clipsToBounds = YES;
-        _waterView = waterView;
-
-        [self addSubview:mainView];
-        [self addSubview:waterView];
-        [waterView addSubview:overView];
-
-        mainView.translatesAutoresizingMaskIntoConstraints = NO;
-        waterView.translatesAutoresizingMaskIntoConstraints = NO;
-        overView.translatesAutoresizingMaskIntoConstraints = NO;
+        _overViews = overViews;
+        _waterViews = waterViews;
 
         [mainView.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
         [mainView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
         [mainView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = YES;
         [mainView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = YES;
-
-        [overView.topAnchor constraintEqualToAnchor:waterView.topAnchor].active = YES;
-        [overView.leadingAnchor constraintEqualToAnchor:waterView.leadingAnchor].active = YES;
-        [overView.widthAnchor constraintEqualToAnchor:mainView.widthAnchor].active = YES;
-        [overView.heightAnchor constraintEqualToAnchor:mainView.heightAnchor].active = YES;
     }
     return self;
 }
 
-- (UIView *)bothView {
-    return (id)[[MLWMultiProxy alloc] initWithObjects:@[
-        self.mainView,
-        self.overView,
-    ]];
+- (UIView *)entireOverView {
+    return (id)[[MLWMultiProxy alloc] initWithObjects:self.overViews];
 }
 
 - (void)layoutSubviews {
@@ -94,17 +101,26 @@
 }
 
 - (void)letsLayout {
-    self.waterView.frame = self.waterFrame;
-    self.overView.transform = CGAffineTransformMakeTranslation(-self.waterFrame.origin.x, -self.waterFrame.origin.y);
+    for (NSInteger i = 0; i < self.waterViews.count; i++) {
+        CGRect frame = self.waterFrames[i].CGRectValue;
+        self.waterViews[i].frame = frame;
+        UIView *overView = self.overViews[i];
+        overView.transform = CGAffineTransformMakeTranslation(-frame.origin.x, -frame.origin.y);
+    }
 }
 
-- (void)overlapWithViewFrame:(CGRect)frame {
-    self.waterFrame = frame;
+- (void)overlapWithViewFrames:(NSArray<NSValue *> *)frames {
+    self.waterFrames = frames;
     [self letsLayout];
 }
 
-- (void)overlapWithView:(UIView *)view {
-    [self overlapWithViewFrame:(self.window == view.window ? [view convertRect:view.bounds toView:self] : CGRectZero)];
+- (void)overlapWithViews:(NSArray<UIView *> *)views {
+    NSMutableArray *frames = [NSMutableArray array];
+    for (UIView *view in views) {
+        CGRect frame = (self.window == view.window) ? [view convertRect:view.bounds toView:self] : CGRectZero;
+        [frames addObject:[NSValue valueWithCGRect:frame]];
+    }
+    [self overlapWithViewFrames:frames];
 }
 
 @end

@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
   s.name             = "Overlap"
-  s.version          = "0.1.2"
+  s.version          = "0.2.0"
   s.summary          = "Tiny iOS library to achieve overlap visual effect"
 
   s.description      = <<-DESC
-                       Allows you to overlay any possible UI elements like UILabels,
+                       Allows you to overlap any possible UI elements like UILabels,
                        UIButtons and even UIToolbars. Just create 2 views or both states
                        and update overlap region from scrollViewDidScroll or panGestureHandler
                        DESC
@@ -18,6 +18,5 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '7.0'
 
   s.source_files = 'Overlap/Classes/**/*'
-
   s.frameworks = 'UIKit'
 end
