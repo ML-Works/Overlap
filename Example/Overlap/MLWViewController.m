@@ -40,11 +40,11 @@
     [self.panMeLabel.bottomAnchor constraintEqualToAnchor:self.redView.bottomAnchor].active = YES;
     [self.panMeLabel.centerXAnchor constraintEqualToAnchor:self.redView.centerXAnchor].active = YES;
 
-    self.overlapView = [[MLWOverlapView alloc] initWithGenerator:^UIView *(BOOL isOverlay) {
+    self.overlapView = [[MLWOverlapView alloc] initWithGenerator:^__kindof UIView *(NSUInteger overlapIndex) {
         UILabel *label = [[UILabel alloc] init];
         label.text = @"Some cool text";
         label.font = [UIFont boldSystemFontOfSize:32.0];
-        label.textColor = isOverlay ? [UIColor whiteColor] : [UIColor redColor];
+        label.textColor = (overlapIndex) ? [UIColor whiteColor] : [UIColor redColor];
         return label;
     }];
     [self.view addSubview:self.overlapView];
@@ -68,7 +68,7 @@
         self.redView.transform = CGAffineTransformIdentity;
     }
 
-    [self.overlapView overlapWithView:self.redView];
+    [self.overlapView overlapWithViews:@[ self.redView ]];
 }
 
 @end
