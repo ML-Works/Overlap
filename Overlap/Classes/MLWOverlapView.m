@@ -91,6 +91,16 @@
     return self;
 }
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    for (UIView *view in self.subviews) {
+        CGPoint p = [view convertPoint:point fromView:self];
+        if (!view.hidden && [view pointInside:p withEvent:event]) {
+            return [view hitTest:p withEvent:event];
+        }
+    }
+    return nil;
+}
+
 - (UIView *)entireOverView {
     return (id)[[MLWMultiProxy alloc] initWithObjects:self.overViews];
 }
