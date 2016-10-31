@@ -92,13 +92,8 @@
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
-    for (UIView *view in self.subviews) {
-        CGPoint p = [view convertPoint:point fromView:self];
-        if (!view.hidden && [view pointInside:p withEvent:event]) {
-            return [view hitTest:p withEvent:event];
-        }
-    }
-    return nil;
+    UIView *view = [super hitTest:point withEvent:event];
+    return (view == self) ? nil : view;
 }
 
 - (UIView *)entireOverView {
