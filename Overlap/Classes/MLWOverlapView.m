@@ -33,6 +33,19 @@
 
 @end
 
+@interface MLWNonTappableView : UIView
+
+@end
+
+@implementation MLWNonTappableView
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    UIView *view = [super hitTest:point withEvent:event];
+    return (view == self) ? nil : view;
+}
+
+@end
+
 //
 
 @interface MLWOverlapView ()
@@ -63,7 +76,7 @@
             UIView *overView = generator(index);
             [overViews addObject:overView];
 
-            UIView *waterView = [[UIView alloc] initWithFrame:self.bounds];
+            UIView *waterView = [[MLWNonTappableView alloc] initWithFrame:self.bounds];
             waterView.backgroundColor = [UIColor clearColor];
             waterView.clipsToBounds = YES;
             [waterViews addObject:waterView];
