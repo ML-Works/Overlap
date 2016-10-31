@@ -1,5 +1,5 @@
 PODS:
-  - Overlap (0.2.1)
+  - Overlap (0.2.2)
 
 DEPENDENCIES:
   - Overlap (from `../`)
@@ -9,7 +9,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Overlap: 5726eccce56a0865c3bc9b5709a30ffe7adcf778
+  Overlap: 8254c351dc8a736642b033089b385c859cbbf02c
 
 PODFILE CHECKSUM: 3b8ee882f1fa6e782665cb4ec15f29e6924c7699
 
