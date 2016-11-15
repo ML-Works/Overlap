@@ -141,4 +141,10 @@
     [self overlapWithViewFrames:frames];
 }
 
+- (void)enumerateOverViews:(void(^)(UIView *overView))block {
+    for (UIView *overView in self.overViews) {
+        block(overView);
+    }
+}
+
 @end
