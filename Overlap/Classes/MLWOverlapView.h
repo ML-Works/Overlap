@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)overlapWithViewFrames:(NSArray<NSValue *> *)frames;
 - (void)overlapWithViews:(NSArray<UIView *> *)views;
 
+- (void)enumerateOverViews:(void(^)(T overView))block;
+
 @end
 
 NS_ASSUME_NONNULL_END
