@@ -8,31 +8,6 @@
 
 #import "MLWOverlapView.h"
 
-@interface MLWMultiProxy : NSProxy
-
-@property (copy, nonatomic) NSArray *objects;
-
-@end
-
-@implementation MLWMultiProxy
-
-- (instancetype)initWithObjects:(NSArray *)objects {
-    self.objects = objects;
-    return self;
-}
-
-- (NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
-    return [self.objects.firstObject methodSignatureForSelector:sel];
-}
-
-- (void)forwardInvocation:(NSInvocation *)invocation {
-    for (NSObject *object in self.objects) {
-        [invocation invokeWithTarget:object];
-    }
-}
-
-@end
-
 @interface MLWNonTappableView : UIView
 
 @end
@@ -44,62 +19,68 @@
     return (view == self) ? nil : view;
 }
 
+- (void)layoutSubviews {
+    if (self.hidden) {
+        return;
+    }
+    [super layoutSubviews];
+}
+
 @end
 
 //
 
 @interface MLWOverlapView ()
 
-@property (strong, nonatomic) UIView *mainView;
-@property (copy, nonatomic) NSArray<UIView *> *overViews;
-@property (copy, nonatomic) NSArray<UIView *> *waterViews;
-@property (copy, nonatomic) NSArray<NSValue *> *waterFrames;
+@property (strong, nonatomic) NSArray<UIView *> *overViews;
+@property (strong, nonatomic) NSArray<UIView *> *waterViews;
+@property (strong, nonatomic) NSArray<CAShapeLayer *> *overMasks;
+@property (strong, nonatomic) NSArray<UIBezierPath *> *lastPaths;
 
 @end
 
 @implementation MLWOverlapView
 
 - (instancetype)initWithGenerator:(UIView * (^)(NSUInteger overlapIndex))generator {
-    return [self initWithOverlapsCount:1 generator:generator];
+    return [self initWithOverlapsCount:2 generator:generator];
 }
 
 - (instancetype)initWithOverlapsCount:(NSUInteger)overlapsCount generator:(UIView * (^)(NSUInteger overlapIndex))generator {
     self = [super init];
     if (self) {
-        UIView *mainView = generator(0);
-        [self addSubview:mainView];
-        mainView.translatesAutoresizingMaskIntoConstraints = NO;
-
-        NSMutableArray *overViews = [NSMutableArray arrayWithCapacity:overlapsCount];
-        NSMutableArray *waterViews = [NSMutableArray arrayWithCapacity:overlapsCount];
-        for (NSInteger index = 1; index <= overlapsCount; index++) {
-            UIView *overView = generator(index);
-            [overViews addObject:overView];
-
-            UIView *waterView = [[MLWNonTappableView alloc] initWithFrame:self.bounds];
-            waterView.backgroundColor = [UIColor clearColor];
+        NSMutableArray *overMasks = [NSMutableArray array];
+        NSMutableArray *waterViews = [NSMutableArray array];
+        NSMutableArray *overViews = [NSMutableArray array];
+        for (NSInteger index = 0; index < overlapsCount; index++) {
+            CAShapeLayer *maskLayer = [CAShapeLayer layer];
+            maskLayer.rasterizationScale = [UIScreen mainScreen].scale;
+            maskLayer.shouldRasterize = YES;
+            [overMasks addObject:maskLayer];
+            
+            UIView *waterView = [[MLWNonTappableView alloc] init];
             waterView.clipsToBounds = YES;
-            [waterViews addObject:waterView];
-
+            waterView.layer.mask = maskLayer;
             [self addSubview:waterView];
-            [waterView addSubview:overView];
             waterView.translatesAutoresizingMaskIntoConstraints = NO;
+            [waterView.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
+            [waterView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
+            [waterView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = YES;
+            [waterView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = YES;
+            [waterViews addObject:waterView];
+            
+            UIView *overView = generator(index);
+            [waterView addSubview:overView];
             overView.translatesAutoresizingMaskIntoConstraints = NO;
-
-            [overView.topAnchor constraintEqualToAnchor:waterView.topAnchor].active = YES;
-            [overView.leadingAnchor constraintEqualToAnchor:waterView.leadingAnchor].active = YES;
-            [overView.widthAnchor constraintEqualToAnchor:mainView.widthAnchor].active = YES;
-            [overView.heightAnchor constraintEqualToAnchor:mainView.heightAnchor].active = YES;
+            [overView.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
+            [overView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
+            [overView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = YES;
+            [overView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = YES;
+            [overViews addObject:overView];
         }
-
-        _mainView = mainView;
-        _overViews = overViews;
+        
         _waterViews = waterViews;
-
-        [mainView.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
-        [mainView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
-        [mainView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = YES;
-        [mainView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = YES;
+        _overViews = overViews;
+        _overMasks = overMasks;
     }
     return self;
 }
@@ -109,41 +90,80 @@
     return (view == self) ? nil : view;
 }
 
-- (UIView *)entireOverView {
-    return (id)[[MLWMultiProxy alloc] initWithObjects:self.overViews];
-}
-
 - (void)layoutSubviews {
     [super layoutSubviews];
-    [self letsLayout];
+    if (self.lastPaths) {
+        [self overlapWithViewPaths:self.lastPaths];
+    }
 }
 
-- (void)letsLayout {
-    for (NSInteger i = 0; i < self.waterViews.count; i++) {
-        CGRect frame = self.waterFrames[i].CGRectValue;
-        self.waterViews[i].frame = frame;
+- (void)overlapWithViewPaths:(NSArray<UIBezierPath *> *)paths {
+    self.lastPaths = paths;
+    
+    for (NSInteger i = 0; i < paths.count; i++) {
+        UIView *waterView = self.waterViews[i];
         UIView *overView = self.overViews[i];
-        overView.transform = CGAffineTransformMakeTranslation(-frame.origin.x, -frame.origin.y);
+        CAShapeLayer *maskLayer = self.overMasks[i];
+        
+        if (CGPathIsEmpty(paths[i].CGPath)) {
+            waterView.hidden = YES;
+            continue;
+        }
+        
+        CGRect frame;
+        if (CGPathIsRect(paths[i].CGPath, &frame)) {
+            if (CGRectIsEmpty(CGRectIntersection(frame, self.bounds))) {
+                waterView.hidden = YES;
+                continue;
+            } else if (waterView.hidden) {
+                waterView.hidden = NO;
+            }
+            
+            waterView.layer.mask = nil;
+            waterView.frame = frame;
+            overView.transform = CGAffineTransformMakeTranslation(
+                -frame.origin.x,
+                -frame.origin.y
+            );
+            continue;
+        }
+        
+        if (waterView.hidden) {
+            waterView.hidden = NO;
+        }
+        if (waterView.layer.mask == nil) {
+            maskLayer = self.overMasks[i];
+            waterView.layer.mask = maskLayer;
+            waterView.frame = self.bounds;
+            overView.transform = CGAffineTransformIdentity;
+        }
+        if (!CGPathEqualToPath(maskLayer.path, paths[i].CGPath)) {
+            maskLayer.path = paths[i].CGPath;
+        }
     }
 }
 
 - (void)overlapWithViewFrames:(NSArray<NSValue *> *)frames {
-    self.waterFrames = frames;
-    [self letsLayout];
+    NSMutableArray<UIBezierPath *> *paths = [NSMutableArray array];
+    for (NSValue *value in frames) {
+        UIBezierPath *path = [UIBezierPath bezierPathWithRect:value.CGRectValue];
+        [paths addObject:path];
+    }
+    [self overlapWithViewPaths:paths];
 }
 
 - (void)overlapWithViews:(NSArray<UIView *> *)views {
-    NSMutableArray *frames = [NSMutableArray array];
+    NSMutableArray<UIBezierPath *> *paths = [NSMutableArray array];
     for (UIView *view in views) {
         CGRect frame = (self.window == view.window) ? [view convertRect:view.bounds toView:self] : CGRectZero;
-        [frames addObject:[NSValue valueWithCGRect:frame]];
+        [paths addObject:[UIBezierPath bezierPathWithRect:frame]];
     }
-    [self overlapWithViewFrames:frames];
+    [self overlapWithViewPaths:paths];
 }
 
-- (void)enumerateOverViews:(void(^)(UIView *overView))block {
-    for (UIView *overView in self.overViews) {
-        block(overView);
+- (void)enumerateOverViews:(void(^)(UIView *overView, NSUInteger index))block {
+    for (NSUInteger i = 0; i < self.overViews.count; i++) {
+        block(self.overViews[i], i);
     }
 }
 
