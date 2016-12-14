@@ -106,25 +106,33 @@
         CAShapeLayer *maskLayer = self.overMasks[i];
         
         if (CGPathIsEmpty(paths[i].CGPath)) {
-            waterView.hidden = YES;
+            if (!waterView.hidden) {
+                waterView.hidden = YES;
+            }
             continue;
         }
         
         CGRect frame;
         if (CGPathIsRect(paths[i].CGPath, &frame)) {
             if (CGRectIsEmpty(CGRectIntersection(frame, self.bounds))) {
-                waterView.hidden = YES;
+                if (!waterView.hidden) {
+                    waterView.hidden = YES;
+                }
                 continue;
             } else if (waterView.hidden) {
                 waterView.hidden = NO;
             }
             
-            waterView.layer.mask = nil;
-            waterView.frame = frame;
-            overView.transform = CGAffineTransformMakeTranslation(
-                -frame.origin.x,
-                -frame.origin.y
-            );
+            if (waterView.layer.mask) {
+                waterView.layer.mask = nil;
+            }
+            if (!CGRectEqualToRect(waterView.frame, frame)) {
+                waterView.frame = frame;
+                overView.transform = CGAffineTransformMakeTranslation(
+                    -frame.origin.x,
+                    -frame.origin.y
+                );
+            }
             continue;
         }
         
