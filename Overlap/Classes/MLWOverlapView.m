@@ -8,6 +8,47 @@
 
 #import "MLWOverlapView.h"
 
+CGRect MLWCGRectMinusCGRect(CGRect fromRect, CGRect toRect) {
+    if (CGRectIsEmpty(toRect)) {
+        return fromRect;
+    }
+    
+    if (CGRectContainsRect(toRect, fromRect)) {
+        return CGRectZero;
+    }
+    
+    BOOL topLeft = CGRectContainsPoint(toRect, CGPointMake(CGRectGetMinX(fromRect),CGRectGetMinY(fromRect)));
+    BOOL topRight = CGRectContainsPoint(toRect, CGPointMake(CGRectGetMaxX(fromRect),CGRectGetMinY(fromRect)));
+    BOOL bottomLeft = CGRectContainsPoint(toRect, CGPointMake(CGRectGetMinX(fromRect),CGRectGetMaxY(fromRect)));
+    BOOL bottomRight = CGRectContainsPoint(toRect, CGPointMake(CGRectGetMaxX(fromRect),CGRectGetMaxY(fromRect)));
+    if ((topLeft ? 1 : 0) + (topRight ? 1 : 0) + (bottomLeft ? 1 : 0) + (bottomRight ? 1 : 0) != 2) {
+        return CGRectNull;
+    }
+    
+    CGRect result = fromRect;
+    if (topLeft && topRight) {
+        result.origin.y = CGRectGetMaxY(toRect);
+        result.size.height -= (CGRectGetMaxY(toRect) - CGRectGetMinY(fromRect));
+    }
+    else if (bottomLeft && bottomRight) {
+        result.size.height -= (CGRectGetMaxY(fromRect) - CGRectGetMinY(toRect));
+    }
+    else if (topLeft && bottomLeft) {
+        result.origin.x = CGRectGetMaxX(toRect);
+        result.size.width -= (CGRectGetMaxX(toRect) - CGRectGetMinX(fromRect));
+    }
+    else if (topRight && bottomRight) {
+        result.size.width -= (CGRectGetMaxX(fromRect) - CGRectGetMinX(toRect));
+    }
+    else {
+        NSCAssert(NO, @"Impossible case");
+    }
+    
+    return result;
+}
+
+//
+
 @interface MLWNonTappableView : UIView
 
 @end
